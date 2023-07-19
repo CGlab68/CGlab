@@ -1,0 +1,97 @@
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+public class MainActivity extends AppCompatActivity
+implements View.OnClickListener {
+Button xmlButton, jsonButton;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+xmlButton = findViewById(R.id.xmlButtom);
+jsonButton = findViewById(R.id.jsonButton);
+xmlButton.setOnClickListener(this);
+jsonButton.setOnClickListener(this);
+}
+@Override
+public void onClick(View v) {
+Intent intent = new Intent(this, ParseActivity.class);
+if (v.equals(xmlButton)) intent.putExtra("Event", "xml");
+if (v.equals(jsonButton)) intent.putExtra("Event", "json");
+startActivity(intent);
+}
+
+}
+
+package com.example.a6;
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.TextView;
+import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import java.io.InputStream;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+public class ParseActivity extends AppCompatActivity {
+TextView xmlText, jsonText;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_parse);
+xmlText = findViewById(R.id.xmlText);
+jsonText = findViewById(R.id.jsonText);
+Intent intent = getIntent();
+String event = intent.getStringExtra("Event");
+try {
+if (event.equals("xml")) parseXml();
+if (event.equals("json")) parseJson();
+
+
+} catch (Exception e) {System.out.println("Exception");}
+}
+private void parseXml() throws Exception {
+DocumentBuilder db =
+DocumentBuilderFactory.newInstance().newDocumentBuilder();
+Document doc = db.parse(getAssets().open("weather.xml"));
+doc.normalize();
+Element element = (Element)doc.getElementsByTagName("weather").item(0);
+xmlText.setText("City_Name : " +
+
+element.getElementsByTagName("city_name").item(0).getTextContent() + "\n");
+
+xmlText.append("Latitude : " +
+
+element.getElementsByTagName("latitude").item(0).getTextContent() + "\n");
+
+xmlText.append("Longitude : " +
+
+element.getElementsByTagName("longitude").item(0).getTextContent() + "\n");
+
+xmlText.append("Temperature: " +
+
+element.getElementsByTagName("temperature").item(0).getTextContent() + "\n");
+
+xmlText.append("Humidity : " +
+
+element.getElementsByTagName("humidity").item(0).getTextContent() + "\n");
+
+}
+private void parseJson() throws Exception {
+InputStream is = getAssets().open("weather.json");
+byte[] data = new byte[is.available()];
+is.read(data);
+String json = new String(data);
+JSONObject obj = new JSONObject(json);
+JSONObject weather = obj.getJSONObject("weather");
+jsonText.setText("City_Name : " + weather.getString("city_name") + "\n");
+
+jsonText.append("Latitude : " + weather.getString("latitude") + "\n");
+jsonText.append("Longitude : " + weather.getString("longitude") + "\n");
+jsonText.append("Temperature: " + weather.getString("temperature") + "\n");
+jsonText.append("Humidity : " + weather.getString("humidity") + "\n");
+}
+}

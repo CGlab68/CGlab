@@ -1,0 +1,39 @@
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import java.util.Locale;
+public class MainActivity extends AppCompatActivity
+implements View.OnClickListener, TextToSpeech.OnInitListener {
+Button speakButton;
+EditText editText;
+TextToSpeech tts;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+editText = findViewById(R.id.editText);
+speakButton = findViewById(R.id.speakButton);
+speakButton.setOnClickListener(this);
+tts = new TextToSpeech(getBaseContext(), this);
+tts.setLanguage(Locale.ENGLISH);
+}
+
+@Override
+public void onClick(View v) {
+String text = editText.getText().toString();
+tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+}
+
+@Override
+public void onInit(int status) {
+if(status != TextToSpeech.ERROR){
+Toast.makeText(getBaseContext(), "Success",
+Toast.LENGTH_LONG).show();
+
+}
+}
+}

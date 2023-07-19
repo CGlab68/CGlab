@@ -1,0 +1,55 @@
+import androidx.appcompat.app.AppCompatActivity;
+import android.app.WallpaperManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import java.io.IOException;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+public class MainActivity extends AppCompatActivity
+implements View.OnClickListener {
+int[] ia = new int[] {
+R.drawable.img1,
+R.drawable.img2,
+R.drawable.img3,
+R.drawable.img4,
+R.drawable.img5
+};
+Button wpButton;
+boolean running = false;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+
+
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+wpButton = findViewById(R.id.wpButton);
+wpButton.setOnClickListener(this);
+}
+
+@Override
+public void onClick(View v) {
+if (!running) {
+new Timer().schedule(new MyTimer(), 0, 3*1000); // every 3 seconds
+running = true;
+}
+}
+private class MyTimer extends TimerTask {
+@Override
+public void run() {
+try {
+Random random = new Random();
+Resources res = getResources(); // resources
+int rid = ia[random.nextInt(5)]; //0..4
+Bitmap b = BitmapFactory.decodeResource(res, rid);
+WallpaperManager wpm=WallpaperManager.getInstance(getBaseContext());
+wpm.setBitmap(b);
+} catch (IOException e) {
+System.out.println("Exception");
+}
+}
+}
